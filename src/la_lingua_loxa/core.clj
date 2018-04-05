@@ -1,5 +1,6 @@
 (ns la-lingua-loxa.core
-  (:require [akar.syntax :refer [match]])
+  (:require [akar.syntax :refer [match]]
+            [clojure.string :refer [lower-case]])
   (:gen-class))
 
 (def token-types-groupings
@@ -39,10 +40,22 @@
 (defn run-file [file]
   (run (slurp file)))
 
-(defn -main [& args]
-  (println "args " args)
-  (match (seq args)
-         (:or nil (:seq [])) (run-prompt)
-         (:seq [file])       (run-file file)
-         :_                  (println "Usage la-lingua-loxa [file]")))
+(defn ansi [text color]
+  (str (match color
+              :black  "\u001B[30m"
+              :red    "\u001B[31m"
+              :green  "\u001B[32m"
+              :yellow "\u001B[33m"
+              :blue   "\u001B[34m"
+              :purple "\u001B[35m"
+              :cyan   "\u001B[36m"
+              :white  "\u001B[37m")
+       text
+       "\u001B[0m"))
 
+(defn -main [& args]
+  (match (seq args)
+         (:or nil (:seq []))                (run-prompt)
+         (:seq [(:view lower-case "help")]) (println (ansi "Usage la-lingua-loxa [file]" :green))
+         (:seq [file])                      (run-file file)
+         :_                                 (println (ansi "Usage la-lingua-loxa [file]" :red))))
