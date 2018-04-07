@@ -7,4 +7,5 @@
                  [akar/akar-core "1.0.0"]]
   :main ^:skip-aot la-lingua-loxa.core
   :target-path "target/%s"
-  :profiles {:uberjar {:aot :all}})
+  :profiles {:uberjar {:aot :all}}
+  :aliases {"rebl" ["trampoline" "run" "-m" "rebel-readline.main"]})
