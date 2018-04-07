@@ -7,7 +7,7 @@
                  [akar/akar-core "1.0.0"]
                  [org.blancas/kern "1.1.0"]
                  [com.bhauman/rebel-readline "0.1.2"]]
-  :main ^:skip-aot la-lingua-loxa.core
+  :main ^:skip-aot la-lingua-loxa.runner
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}}
   :aliases {"rebl" ["trampoline" "run" "-m" "rebel-readline.main"]})
