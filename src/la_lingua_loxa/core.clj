@@ -1,34 +1,58 @@
 (ns la-lingua-loxa.core
   (:require [akar.syntax :refer [match]]
-            [clojure.string :refer [lower-case]])
+            [clojure.string :refer [lower-case]]
+            [blancas.kern.core :as k]
+            [blancas.kern.lexer.basic :as kl]
+            [clojure.pprint :refer [pprint]])
   (:gen-class))
 
-(def token-types-groupings
-  {:single-character-tokens     [:left-paren :right-paren :left-brace :right-brace
-                                 :comma :dot :minus :plus :semicolon :slash :star]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; S-Expressions parser
 
-   :one-or-two-character-tokens [:bang :bang-equal
-                                 :equal :equal-equal
-                                 :greater :greater-equal
-                                 :less :less-equal]
+(def whitespace?
+  (k/many k/white-space))
 
-   :literals                    [:identifier :string :number]
+(def lox-symbol
+  (k/bind [sym (apply k/<|> (map k/sym* [\+ \- \* \/]))]
+    (k/return {:node :lox-symbol
+               :value (keyword (str sym))})))
 
-   :keywords                    [:and :class :else :false :fun :for :if :nil :or
-                                 :print :return :super :this :true :var :while]
+(def lox-number
+  (k/bind [num (k/<|> k/dec-num k/float-num)]
+    (k/return {:node :lox-number
+               :value num})))
 
-   :standalone                  [:eof]})
+(def lox-atom
+  (k/bind [value (k/<|> lox-symbol lox-number)]
+    (k/return {:node :lox-atom
+               :value value})))
 
-(def token-types
-  (-> token-types-groupings vals flatten set))
+(declare lox-expression)
 
-(defn scan-tokens [lox-text]
-  [])
+(def lox-invocation
+  (k/bind [_ (k/sym* \()
+           _ whitespace?
+           operator (k/fwd lox-expression)
+           _ whitespace?
+           operands (k/end-by whitespace? (k/fwd lox-expression))
+           _ (k/sym* \))]
+    (k/return {:node :lox-invocation
+               :operator operator
+               :operands operands})))
 
-(defn run [lox-text]
-  (let [tokens (scan-tokens lox-text)]
-    (doseq [token tokens]
-      (println token))))
+(def lox-expression
+  (k/bind [value (k/<|> lox-atom lox-invocation)]
+    (k/return {:node :lox-expression
+               :value value})))
+
+(defn parse-lox-expression [lox-source]
+  (k/parse lox-expression lox-source))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Runner
+
+(defn run [lox-source]
+  (pprint (parse-lox-expression lox-source)))
 
 (defn run-prompt []
   (loop []
