@@ -13,7 +13,6 @@
 
 (defn interpret [lox-syntax-tree]
   (match lox-syntax-tree
-         {:node :lox-expression :value expression}  (interpret expression)
          {:node :lox-atom :value atom}              (interpret atom)
          {:node :lox-number :value value}           value
          {:node :lox-symbol :value symbol}          (resolve-symbol symbol)

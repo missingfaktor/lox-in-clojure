@@ -34,9 +34,7 @@
                :operands operands})))
 
 (def ^:private lox-expression
-  (k/bind [value (k/<|> lox-atom lox-invocation)]
-    (k/return {:node  :lox-expression
-               :value value})))
+  (k/<|> lox-atom lox-invocation))
 
 (defn parse [lox-source]
   (k/parse lox-expression lox-source))
