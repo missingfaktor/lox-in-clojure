@@ -15,7 +15,11 @@
          (k/sym* \*)
          (k/sym* \/)
          (k/sym* \.)
-         (k/sym* \,)))
+         (k/sym* \,)
+         (k/sym* \=)
+         (k/sym* \<)
+         (k/sym* \>)
+         (k/sym* \!)))
 
 (def ^:private lox-symbol
   (k/bind [[head tail] (k/<*> lox-symbol-start

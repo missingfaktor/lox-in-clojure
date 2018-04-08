@@ -6,12 +6,18 @@
 
 (defn ^:private resolve-symbol [symbol']
   (match symbol'
-         :+ +
-         :- -
-         :* *
-         :/ /
+         :+                          +
+         :-                          -
+         :*                          *
+         :/                          /
          [(!constant (keyword ","))] str
-         :_ (lu/fail-with (str "Could not resolve symbol! " symbol'))))
+         :<                          <
+         :<=                         <=
+         :>                          >
+         :>=                         >=
+         :=                          =
+         :not=                       not=
+         :_                          (lu/fail-with (str "Could not resolve symbol! " symbol'))))
 
 (defn interpret [lox-syntax-tree]
   (match lox-syntax-tree
