@@ -13,7 +13,9 @@
                        (lu/fail-with (str "Parsing failure! " (:error parse-result))))
         syntax-tree  (:value parse-result)
         _            (lu/print-colored syntax-tree :yellow)
-        value        (li/interpret syntax-tree)]
+        environment  (li/new-environment)
+        value        (li/interpret syntax-tree environment)]
+    (lu/print-colored (keys @environment)  :blue)
     (lu/print-colored value :green)))
 
 (defn run-prompt []

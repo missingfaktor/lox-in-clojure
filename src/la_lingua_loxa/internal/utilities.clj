@@ -21,3 +21,8 @@
 
 (defn string-within-range [start end]
   (apply str (map char (range (int start) (inc (int end))))))
+
+(defn in-map [dictionary]
+  (fn [key]
+    (if (contains? dictionary key)
+      [(dictionary key)])))
