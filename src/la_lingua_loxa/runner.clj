@@ -9,11 +9,11 @@
 
 (defn run [lox-source]
   (let [parse-result (lp/parse lox-source)
-        _ (if (:error parse-result)
-            (lu/fail-with (str "Parsing failure! " (:error parse-result))))
-        syntax-tree (:value parse-result)
-        _ (lu/print-colored syntax-tree :yellow)
-        value (li/interpret syntax-tree)]
+        _            (if (:error parse-result)
+                       (lu/fail-with (str "Parsing failure! " (:error parse-result))))
+        syntax-tree  (:value parse-result)
+        _            (lu/print-colored syntax-tree :yellow)
+        value        (li/interpret syntax-tree)]
     (lu/print-colored value :green)))
 
 (defn run-prompt []

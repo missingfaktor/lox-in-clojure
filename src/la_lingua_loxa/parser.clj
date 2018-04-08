@@ -23,12 +23,12 @@
 (declare lox-expression)
 
 (def ^:private lox-invocation
-  (k/bind [_ (k/sym* \()
-           _ whitespace?
+  (k/bind [_        (k/sym* \()
+           _        whitespace?
            operator (k/fwd lox-expression)
-           _ whitespace?
+           _        whitespace?
            operands (k/end-by whitespace? (k/fwd lox-expression))
-           _ (k/sym* \))]
+           _        (k/sym* \))]
     (k/return {:node     :lox-invocation
                :operator operator
                :operands operands})))
