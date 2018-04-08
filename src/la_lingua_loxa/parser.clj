@@ -54,7 +54,8 @@
 (def lox-list
   (k/bind [_        (k/sym* \()
            _        whitespace?
-           elements (k/end-by whitespace? (k/fwd lox-expression))
+           elements (k/sep-end-by whitespace? (k/fwd lox-expression))
+           _        whitespace?
            _        (k/sym* \))]
     (k/return {:node     :lox-list
                :elements elements})))
