@@ -18,3 +18,6 @@
 
 (defn fail-with [message]
   (throw (RuntimeException. ^String message)))
+
+(defn string-within-range [start end]
+  (apply str (map char (range (int start) (inc (int end))))))

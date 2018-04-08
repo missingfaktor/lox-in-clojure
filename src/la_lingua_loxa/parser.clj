@@ -1,14 +1,25 @@
 (ns la-lingua-loxa.parser
-  (:require [blancas.kern.core :as k])
+  (:require [blancas.kern.core :as k]
+            [la-lingua-loxa.internal.utilities :as lu])
   (:gen-class))
 
 (def ^:private whitespace?
   (k/many k/white-space))
 
+(def ^:private lox-symbol-start
+  (k/<|> (k/one-of* (lu/string-within-range \a \z))
+         (k/one-of* (lu/string-within-range \A \Z))
+         (k/sym* \+)
+         (k/sym* \-)
+         (k/sym* \*)
+         (k/sym* \/)
+         (k/sym* \.)))
+
 (def ^:private lox-symbol
-  (k/bind [sym (apply k/<|> (map k/sym* [\+ \- \* \/]))]
+  (k/bind [[head tail] (k/<*> lox-symbol-start
+                              (k/many (k/<|> lox-symbol-start k/digit)))]
     (k/return {:node  :lox-symbol
-               :value (keyword (str sym))})))
+               :value (keyword (apply str head tail))})))
 
 (def ^:private lox-number
   (k/bind [num (k/<|> k/dec-num k/float-num)]
