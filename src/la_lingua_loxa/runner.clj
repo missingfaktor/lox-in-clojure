@@ -2,12 +2,19 @@
   (:require [akar.syntax :refer [match]]
             [clojure.string :refer [lower-case]]
             [la-lingua-loxa.parser :as lp]
+            [la-lingua-loxa.interpreter :as li]
             [la-lingua-loxa.internal.utilities :as lu]
             [clojure.pprint :refer [pprint]])
   (:gen-class))
 
 (defn run [lox-source]
-  (lu/print-colored (lp/parse lox-source) :yellow))
+  (let [parse-result (lp/parse lox-source)
+        _ (if (:error parse-result)
+            (lu/fail-with (str "Parsing failure! " (:error parse-result))))
+        syntax-tree (:value parse-result)
+        _ (lu/print-colored syntax-tree :yellow)
+        value (li/interpret syntax-tree)]
+    (lu/print-colored value :green)))
 
 (defn run-prompt []
   (loop []

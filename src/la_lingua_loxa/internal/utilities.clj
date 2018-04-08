@@ -15,3 +15,6 @@
                        :white  "\u001B[37m")
                 (with-out-str (pprint value))
                 "\u001B[0m")))
+
+(defn fail-with [message]
+  (throw (RuntimeException. ^String message)))
