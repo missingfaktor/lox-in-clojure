@@ -1,5 +1,7 @@
 # la-lingua-loxa
 
+[![Build Status](https://travis-ci.org/missingfaktor/la-lingua-loxa.svg?branch=master)](https://travis-ci.org/missingfaktor/la-lingua-loxa)
+
 This is a Clojure implementation of a tree-walking interpreter for Lox language from [Bob Nystorm](https://twitter.com/munificentbob)'s excellent book ["Crafting Interpreters"](http://craftinginterpreters.com/).
 
 # Running
