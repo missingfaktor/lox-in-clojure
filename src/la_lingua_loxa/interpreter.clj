@@ -32,6 +32,14 @@
                                                            evaluation-result)
          :_                                              (lu/fail-with "Malformed definition!")))
 
+(defn lox-assign [operands environment]
+  (match operands
+         (:seq [{:node :lox-symbol :value name'} value]) (let [_ (resolve-symbol name' environment)
+                                                               evaluation-result (interpret value environment)]
+                                                           (swap! environment assoc name' evaluation-result)
+                                                           evaluation-result)
+         :_                                              (lu/fail-with "Malformed assignment expression!")))
+
 (defn interpret [lox-syntax-tree environment]
   (match lox-syntax-tree
 
@@ -51,7 +59,13 @@
                            & operands])}          (lox-define operands environment)
 
          {:node :lox-list
+          :elements (:seq [{:node :lox-symbol
+                            :value :set}
+                           & operands])}          (lox-assign operands environment)
+
+         {:node :lox-list
           :elements (:seq [operator & operands])} (apply (interpret operator environment)
                                                          (map #(interpret % environment) operands))
 
-         expression                               (lu/fail-with (str "Could not interpret expression! " expression))))
+         expression                               (lu/fail-with
+                                                    (str "Could not interpret expression! " expression))))
