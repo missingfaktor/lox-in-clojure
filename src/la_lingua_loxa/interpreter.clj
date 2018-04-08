@@ -40,12 +40,17 @@
                                                            evaluation-result)
          :_                                              (lu/fail-with "Malformed assignment expression!")))
 
+(defn ensuring-boolean [value]
+  (if (instance? Boolean value)
+    value
+    (lu/fail-with "The expression does not evaluate to a boolean!")))
+
 (defn lox-if [operands environment]
   (match operands
-         (:seq [condition then else]) (if (interpret condition environment)
+         (:seq [condition then else]) (if (ensuring-boolean (interpret condition environment))
                                         (interpret then environment)
                                         (interpret else environment))
-         (:seq [condition then])      (if (interpret condition environment)
+         (:seq [condition then])      (if (ensuring-boolean (interpret condition environment))
                                         (interpret then environment))
          :_                           (lu/fail-with "Malformed if-expression!")))
 
