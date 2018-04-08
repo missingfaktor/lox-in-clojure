@@ -18,14 +18,14 @@
          :not=         not=
          :print        println}))
 
-(defn ^:private resolve-symbol [symbol' environment]
+(defn resolve-symbol [symbol' environment]
   (match symbol'
          [(lu/in-map @environment) fun] fun
          :_                             (lu/fail-with (str "Could not resolve symbol! " symbol'))))
 
 (declare interpret)
 
-(defn ^:private lox-define [operands environment]
+(defn lox-define [operands environment]
   (match operands
          (:seq [{:node :lox-symbol :value name'} value]) (do
                                                            (swap! environment assoc name' (interpret value environment))

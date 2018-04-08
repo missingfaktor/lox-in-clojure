@@ -4,10 +4,10 @@
             [la-lingua-loxa.internal.utilities :as lu])
   (:gen-class))
 
-(def ^:private whitespace?
+(def whitespace?
   (k/many k/white-space))
 
-(def ^:private lox-symbol-start
+(def lox-symbol-start
   (k/<|> (k/one-of* (lu/string-within-range \a \z))
          (k/one-of* (lu/string-within-range \A \Z))
          (k/sym* \+)
@@ -21,37 +21,37 @@
          (k/sym* \>)
          (k/sym* \!)))
 
-(def ^:private lox-symbol
+(def lox-symbol
   (k/bind [[head tail] (k/<*> lox-symbol-start
                               (k/many (k/<|> lox-symbol-start k/digit)))]
     (k/return {:node  :lox-symbol
                :value (keyword (apply str head tail))})))
 
-(def ^:private lox-number
+(def lox-number
   (k/bind [num (k/<|> k/dec-num k/float-num)]
     (k/return {:node  :lox-number
                :value num})))
 
-(def ^:private lox-string
+(def lox-string
   (k/bind [string kl/string-lit]
     (k/return {:node :lox-string
                :value string})))
 
-(def ^:private lox-nil
+(def lox-nil
   (k/bind [_ (k/token* "nil")]
     (k/return {:node :lox-nil})))
 
-(def ^:private lox-boolean
+(def lox-boolean
   (k/bind [value (k/<|> (k/token* "true") (k/token* "false"))]
     (k/return {:node :lox-boolean
                :value (Boolean/parseBoolean value)})))
 
-(def ^:private lox-atom
+(def lox-atom
   (k/<|> lox-nil lox-boolean lox-symbol lox-number lox-string))
 
 (declare lox-expression)
 
-(def ^:private lox-list
+(def lox-list
   (k/bind [_        (k/sym* \()
            _        whitespace?
            elements (k/end-by whitespace? (k/fwd lox-expression))
@@ -59,7 +59,7 @@
     (k/return {:node     :lox-list
                :elements elements})))
 
-(def ^:private lox-expression
+(def lox-expression
   (k/<|> lox-atom lox-list))
 
 (defn parse [lox-source]
