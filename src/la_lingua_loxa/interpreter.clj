@@ -86,5 +86,10 @@
           :elements (:seq [operator & operands])} (apply (interpret operator environment)
                                                          (map #(interpret % environment) operands))
 
+         {:node        :lox-program
+          :expressions expressions}               (reduce (fn [_ expression] (interpret expression environment))
+                                                          nil
+                                                          expressions)
+
          expression                               (lu/fail-with
                                                     (str "Could not interpret expression! " expression))))

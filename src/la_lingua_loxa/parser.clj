@@ -63,5 +63,10 @@
 (def lox-expression
   (k/<|> lox-atom lox-list))
 
+(def lox-program
+  (k/bind [expressions (k/<*> (k/sep-end-by whitespace? lox-expression) (k/skip k/eof))]
+    (k/return {:node :lox-program
+               :expressions (mapcat identity expressions)})))
+
 (defn parse [lox-source]
-  (k/parse lox-expression lox-source))
+  (k/parse lox-program lox-source))
