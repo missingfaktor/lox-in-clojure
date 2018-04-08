@@ -1,20 +1,22 @@
 (ns la-lingua-loxa.interpreter
   (:require [akar.syntax :refer [match]]
+            [akar.patterns :refer [!constant]]
             [la-lingua-loxa.internal.utilities :as lu])
   (:gen-class))
 
-(defn ^:private resolve-symbol [symbol]
-  (match symbol
+(defn ^:private resolve-symbol [symbol']
+  (match symbol'
          :+ +
          :- -
          :* *
          :/ /
-         :_ (lu/fail-with (str "Could not resolve symbol! " symbol))))
+         [(!constant (keyword ","))] str
+         :_ (lu/fail-with (str "Could not resolve symbol! " symbol'))))
 
 (defn interpret [lox-syntax-tree]
   (match lox-syntax-tree
 
-         {:node :lox-number
+         {:node (:or :lox-number :lox-string)
           :value value}                           value
 
          {:node :lox-symbol

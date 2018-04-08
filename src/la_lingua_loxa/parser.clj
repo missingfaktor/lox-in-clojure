@@ -1,5 +1,6 @@
 (ns la-lingua-loxa.parser
   (:require [blancas.kern.core :as k]
+            [blancas.kern.lexer.basic :as kl]
             [la-lingua-loxa.internal.utilities :as lu])
   (:gen-class))
 
@@ -13,7 +14,8 @@
          (k/sym* \-)
          (k/sym* \*)
          (k/sym* \/)
-         (k/sym* \.)))
+         (k/sym* \.)
+         (k/sym* \,)))
 
 (def ^:private lox-symbol
   (k/bind [[head tail] (k/<*> lox-symbol-start
@@ -26,8 +28,13 @@
     (k/return {:node  :lox-number
                :value num})))
 
+(def ^:private lox-string
+  (k/bind [string kl/string-lit]
+    (k/return {:node :lox-string
+               :value string})))
+
 (def ^:private lox-atom
-  (k/<|> lox-symbol lox-number))
+  (k/<|> lox-symbol lox-number lox-string))
 
 (declare lox-expression)
 
