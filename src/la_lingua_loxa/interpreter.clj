@@ -17,6 +17,7 @@
          :>=                         >=
          :=                          =
          :not=                       not=
+         :print                      println
          :_                          (lu/fail-with (str "Could not resolve symbol! " symbol'))))
 
 (defn interpret [lox-syntax-tree]
