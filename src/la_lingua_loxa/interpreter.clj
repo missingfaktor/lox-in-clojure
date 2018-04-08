@@ -23,6 +23,15 @@
          [(lu/in-map @environment) fun] fun
          :_                             (lu/fail-with (str "Could not resolve symbol! " symbol'))))
 
+(declare interpret)
+
+(defn ^:private lox-define [operands environment]
+  (match operands
+         (:seq [{:node :lox-symbol :value name'} value]) (do
+                                                           (swap! environment assoc name' (interpret value environment))
+                                                           nil)
+         :_                                              (lu/fail-with "Malformed definition!")))
+
 (defn interpret [lox-syntax-tree environment]
   (match lox-syntax-tree
 
@@ -35,6 +44,11 @@
 
          {:node :lox-symbol
           :value symbol}                          (resolve-symbol symbol environment)
+
+         {:node :lox-list
+          :elements (:seq [{:node :lox-symbol
+                            :value :define}
+                           & operands])}          (lox-define operands environment)
 
          {:node :lox-list
           :elements (:seq [operator & operands])} (apply (interpret operator environment)
