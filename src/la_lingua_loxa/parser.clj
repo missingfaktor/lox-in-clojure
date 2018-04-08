@@ -16,25 +16,20 @@
                :value num})))
 
 (def ^:private lox-atom
-  (k/bind [value (k/<|> lox-symbol lox-number)]
-    (k/return {:node  :lox-atom
-               :value value})))
+  (k/<|> lox-symbol lox-number))
 
 (declare lox-expression)
 
-(def ^:private lox-invocation
+(def ^:private lox-list
   (k/bind [_        (k/sym* \()
            _        whitespace?
-           operator (k/fwd lox-expression)
-           _        whitespace?
-           operands (k/end-by whitespace? (k/fwd lox-expression))
+           elements (k/end-by whitespace? (k/fwd lox-expression))
            _        (k/sym* \))]
-    (k/return {:node     :lox-invocation
-               :operator operator
-               :operands operands})))
+    (k/return {:node     :lox-list
+               :elements elements})))
 
 (def ^:private lox-expression
-  (k/<|> lox-atom lox-invocation))
+  (k/<|> lox-atom lox-list))
 
 (defn parse [lox-source]
   (k/parse lox-expression lox-source))
