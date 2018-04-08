@@ -23,7 +23,7 @@
     (try
       (run (read-line))
       (catch Exception ex
-        (lu/print-colored ex :red)))
+        (lu/print-colored (.getMessage ex) :red)))
     (recur)))
 
 (defn run-file [file]
