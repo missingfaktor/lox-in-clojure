@@ -40,6 +40,15 @@
                                                            evaluation-result)
          :_                                              (lu/fail-with "Malformed assignment expression!")))
 
+(defn lox-if [operands environment]
+  (match operands
+         (:seq [condition then else]) (if (interpret condition environment)
+                                        (interpret then environment)
+                                        (interpret else environment))
+         (:seq [condition then])      (if (interpret condition environment)
+                                        (interpret then environment))
+         :_                           (lu/fail-with "Malformed if-expression!")))
+
 (defn interpret [lox-syntax-tree environment]
   (match lox-syntax-tree
 
@@ -62,6 +71,11 @@
           :elements (:seq [{:node  :lox-symbol
                             :value :set}
                            & operands])}          (lox-assign operands environment)
+
+         {:node     :lox-list
+          :elements (:seq [{:node  :lox-symbol
+                            :value :if}
+                           & operands])}          (lox-if operands environment)
 
          {:node     :lox-list
           :elements (:seq [operator & operands])} (apply (interpret operator environment)
