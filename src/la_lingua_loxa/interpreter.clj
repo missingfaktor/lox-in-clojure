@@ -27,9 +27,9 @@
 
 (defn lox-define [operands environment]
   (match operands
-         (:seq [{:node :lox-symbol :value name'} value]) (do
-                                                           (swap! environment assoc name' (interpret value environment))
-                                                           nil)
+         (:seq [{:node :lox-symbol :value name'} value]) (let [evaluation-result (interpret value environment)]
+                                                           (swap! environment assoc name' evaluation-result)
+                                                           evaluation-result)
          :_                                              (lu/fail-with "Malformed definition!")))
 
 (defn interpret [lox-syntax-tree environment]
