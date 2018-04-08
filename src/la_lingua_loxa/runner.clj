@@ -7,29 +7,29 @@
             [clojure.pprint :refer [pprint]])
   (:gen-class))
 
-(defn run [lox-source]
+(defn run [lox-source environment]
   (let [parse-result (lp/parse lox-source)
         _            (if (:error parse-result)
                        (lu/fail-with (str "Parsing failure! " (:error parse-result))))
         syntax-tree  (:value parse-result)
         _            (lu/report syntax-tree :header "# Syntax tree:" :color :yellow)
-        environment  (li/new-environment)
         _            (lu/report (keys @environment) :header "# Environment:" :color :blue)
         value        (li/interpret syntax-tree environment)]
     (lu/report value :header "# Value:" :color :green)))
 
 (defn run-prompt []
-  (loop []
-    (print "lox> ")
-    (flush)
-    (try
-      (run (read-line))
-      (catch Exception ex
-        (lu/report (.getMessage ex) :color :red)))
-    (recur)))
+  (let [environment (li/new-environment)]
+    (loop []
+      (print "lox> ")
+      (flush)
+      (try
+        (run (read-line) environment)
+        (catch Exception ex
+          (lu/report (.getMessage ex) :color :red)))
+      (recur))))
 
 (defn run-file [file]
-  (run (slurp file)))
+  (run (slurp file) (li/new-environment)))
 
 (defn -main [& args]
   (match (seq args)
