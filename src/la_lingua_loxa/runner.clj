@@ -12,11 +12,11 @@
         _            (if (:error parse-result)
                        (lu/fail-with (str "Parsing failure! " (:error parse-result))))
         syntax-tree  (:value parse-result)
-        _            (lu/print-colored syntax-tree :yellow)
+        _            (lu/report syntax-tree :header "# Syntax tree:" :color :yellow)
         environment  (li/new-environment)
+        _            (lu/report (keys @environment) :header "# Environment:" :color :blue)
         value        (li/interpret syntax-tree environment)]
-    (lu/print-colored (keys @environment)  :blue)
-    (lu/print-colored value :green)))
+    (lu/report value :header "# Value:" :color :green)))
 
 (defn run-prompt []
   (loop []
@@ -25,7 +25,7 @@
     (try
       (run (read-line))
       (catch Exception ex
-        (lu/print-colored (.getMessage ex) :red)))
+        (lu/report (.getMessage ex) :color :red)))
     (recur)))
 
 (defn run-file [file]
@@ -34,6 +34,6 @@
 (defn -main [& args]
   (match (seq args)
          (:or nil (:seq []))                (run-prompt)
-         (:seq [(:view lower-case "help")]) (lu/print-colored "Usage la-lingua-loxa [file]" :green)
+         (:seq [(:view lower-case "help")]) (lu/report "Usage la-lingua-loxa [file]" :color :green)
          (:seq [file])                      (run-file file)
-         :_                                 (lu/print-colored "Usage la-lingua-loxa [file]" :red)))
+         :_                                 (lu/report "Usage la-lingua-loxa [file]" :color :red)))
