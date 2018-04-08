@@ -28,7 +28,7 @@
                :value (keyword (apply str head tail))})))
 
 (def lox-number
-  (k/bind [num (k/<|> k/dec-num k/float-num)]
+  (k/bind [num (k/<|> kl/dec-lit kl/float-lit)]
     (k/return {:node  :lox-number
                :value num})))
 
