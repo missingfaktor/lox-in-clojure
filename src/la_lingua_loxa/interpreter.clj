@@ -43,9 +43,9 @@
 (defn interpret [lox-syntax-tree environment]
   (match lox-syntax-tree
 
-         {:node (:or :lox-number
-                     :lox-string
-                     :lox-boolean)
+         {:node  (:or :lox-number
+                      :lox-string
+                      :lox-boolean)
           :value value}                           value
 
          {:node :lox-nil}                         nil
@@ -53,17 +53,17 @@
          {:node :lox-symbol
           :value symbol}                          (resolve-symbol symbol environment)
 
-         {:node :lox-list
-          :elements (:seq [{:node :lox-symbol
+         {:node     :lox-list
+          :elements (:seq [{:node  :lox-symbol
                             :value :define}
                            & operands])}          (lox-define operands environment)
 
-         {:node :lox-list
-          :elements (:seq [{:node :lox-symbol
+         {:node     :lox-list
+          :elements (:seq [{:node  :lox-symbol
                             :value :set}
                            & operands])}          (lox-assign operands environment)
 
-         {:node :lox-list
+         {:node     :lox-list
           :elements (:seq [operator & operands])} (apply (interpret operator environment)
                                                          (map #(interpret % environment) operands))
 
