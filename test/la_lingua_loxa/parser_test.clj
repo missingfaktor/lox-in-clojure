@@ -17,4 +17,17 @@
 
   (testing "Parsing real numbers"
     (should-parse-to lp/lox-number "1.2" {:node  :lox-number
-                                          :value 1.2})))
+                                          :value 1.2}))
+
+  (testing "Parsing nil"
+    (should-parse-to lp/lox-nil "nil" {:node :lox-nil}))
+
+  (testing "Parsing booleans"
+    (should-parse-to lp/lox-boolean "true" {:node  :lox-boolean
+                                            :value true})
+    (should-parse-to lp/lox-boolean "false" {:node  :lox-boolean
+                                             :value false}))
+
+  (testing "Parsing strings"
+    (should-parse-to lp/lox-string "\"Hello\"" {:node  :lox-string
+                                                :value "Hello"})))
