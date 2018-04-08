@@ -20,7 +20,10 @@
   (loop []
     (print "lox> ")
     (flush)
-    (run (read-line))
+    (try
+      (run (read-line))
+      (catch Exception ex
+        (lu/print-colored ex :red)))
     (recur)))
 
 (defn run-file [file]
