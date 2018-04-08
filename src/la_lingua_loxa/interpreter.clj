@@ -20,8 +20,8 @@
 
 (defn resolve-symbol [symbol' environment]
   (match symbol'
-         [(lu/in-map @environment) fun] fun
-         :_                             (lu/fail-with (str "Could not resolve symbol! " symbol'))))
+         [(lu/!in-map @environment) fun] fun
+         :_                              (lu/fail-with (str "Could not resolve symbol! " symbol'))))
 
 (declare interpret)
 
