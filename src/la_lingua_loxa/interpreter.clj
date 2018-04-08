@@ -16,8 +16,12 @@
 (defn interpret [lox-syntax-tree]
   (match lox-syntax-tree
 
-         {:node (:or :lox-number :lox-string)
+         {:node (:or :lox-number
+                     :lox-string
+                     :lox-boolean)
           :value value}                           value
+
+         {:node :lox-nil}                         nil
 
          {:node :lox-symbol
           :value symbol}                          (resolve-symbol symbol)

@@ -33,8 +33,17 @@
     (k/return {:node :lox-string
                :value string})))
 
+(def ^:private lox-nil
+  (k/bind [_ (k/token* "nil")]
+    (k/return {:node :lox-nil})))
+
+(def ^:private lox-boolean
+  (k/bind [value (k/<|> (k/token* "true") (k/token* "false"))]
+    (k/return {:node :lox-boolean
+               :value (Boolean/parseBoolean value)})))
+
 (def ^:private lox-atom
-  (k/<|> lox-symbol lox-number lox-string))
+  (k/<|> lox-nil lox-boolean lox-symbol lox-number lox-string))
 
 (declare lox-expression)
 
