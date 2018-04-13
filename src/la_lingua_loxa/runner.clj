@@ -4,7 +4,8 @@
             [la-lingua-loxa.parser :as lp]
             [la-lingua-loxa.interpreter :as li]
             [la-lingua-loxa.internal.utilities :as lu]
-            [clojure.pprint :refer [pprint]])
+            [clojure.pprint :refer [pprint]]
+            [akar-exceptions.core :refer [attempt !ex]])
   (:gen-class))
 
 (defn run [lox-source environment]
@@ -22,10 +23,8 @@
     (loop []
       (print "lox> ")
       (flush)
-      (try
-        (run (read-line) environment)
-        (catch Exception ex
-          (lu/report (.getMessage ex) :color :red)))
+      (attempt (run (read-line) environment)
+               :on-error ([(!ex Exception) ex] (lu/report (.getMessage ex) :color :red)))
       (recur))))
 
 (defn run-file [file]
