@@ -1,5 +1,5 @@
 (ns la-lingua-loxa.interpreter
-  (:require [akar.syntax :refer [match]]
+  (:require [akar.syntax :refer [match clauses]]
             [akar.patterns :refer [!constant]]
             [la-lingua-loxa.internal.utilities :as lu])
   (:gen-class))
@@ -54,6 +54,19 @@
                                         (interpret then environment))
          :_                           (lu/fail-with "Malformed if-expression!")))
 
+(defn lox-let [bindings body environment]
+  (let [parse-binding (clauses {:node     :lox-list
+                                :elements (:seq [{:node  :lox-symbol
+                                                  :value name}
+                                                 expression])} [name expression]
+                                          :_                   (lu/fail-with "Malformed let-expression!"))]
+
+    (let [parsed-bindings (map parse-binding bindings)]
+      (doseq [[name expression] parsed-bindings]
+        (let [evaluation-result (interpret expression environment)]
+          (swap! environment assoc name evaluation-result)))
+      (interpret body environment))))
+
 (defn interpret [lox-syntax-tree environment]
   (match lox-syntax-tree
 
@@ -81,6 +94,13 @@
           :elements (:seq [{:node  :lox-symbol
                             :value :if}
                            & operands])}          (lox-if operands environment)
+
+         {:node     :lox-list
+          :elements (:seq [{:node  :lox-symbol
+                            :value :let}
+                           {:node :lox-list
+                            :elements bindings}
+                           body])}                (lox-let bindings body environment)
 
          {:node     :lox-list
           :elements (:seq [operator & operands])} (apply (interpret operator environment)

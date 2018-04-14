@@ -42,4 +42,10 @@
     (= (interpret "(define x 9)
                    (define z 2)
                    (+ x z 1)")
-       12)))
+       12))
+
+  (testing "Let bindings"
+    (= (interpret "(let ((x 11)) x)")
+       11)
+    (= (interpret "(let ((b 9) (c b)) (+ b c))")
+       18)))
