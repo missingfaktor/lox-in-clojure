@@ -19,7 +19,7 @@
     (lu/report value :header "# Value:" :color :green)))
 
 (defn run-prompt []
-  (let [environment (li/new-environment)]
+  (let [environment (li/clone-global-environment)]
     (loop []
       (print "lox> ")
       (flush)
@@ -28,7 +28,7 @@
       (recur))))
 
 (defn run-file [file]
-  (run (slurp file) (li/new-environment)))
+  (run (slurp file) (li/clone-global-environment)))
 
 (defn -main [& args]
   (match (seq args)

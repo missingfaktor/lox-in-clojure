@@ -4,7 +4,7 @@
             [la-lingua-loxa.parser :as lp]))
 
 (defn interpret [source-line]
-  (li/interpret (:value (lp/parse source-line)) (li/new-environment)))
+  (li/interpret (:value (lp/parse source-line)) (li/clone-global-environment)))
 
 (deftest interpreter-test
   (testing "Atomic values"

@@ -4,19 +4,22 @@
             [la-lingua-loxa.internal.utilities :as lu])
   (:gen-class))
 
-(defn new-environment []
-  (atom {:+            +
-         :-            -
-         :*            *
-         :/            /
-         (keyword ",") str
-         :<            <
-         :<=           <=
-         :>            >
-         :>=           >=
-         :=            =
-         :not=         not=
-         :print        println}))
+(def +global-environment+
+  {:+            +
+   :-            -
+   :*            *
+   :/            /
+   (keyword ",") str
+   :<            <
+   :<=           <=
+   :>            >
+   :>=           >=
+   :=            =
+   :not=         not=
+   :print        println})
+
+(defn clone-global-environment []
+  (atom +global-environment+))
 
 (defn resolve-symbol [symbol' environment]
   (match symbol'
