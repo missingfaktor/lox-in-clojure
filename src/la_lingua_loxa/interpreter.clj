@@ -25,41 +25,32 @@
 
 (declare interpret)
 
-(defn lox-define [operands environment]
-  (match operands
-         (:seq [{:node :lox-symbol :value name'} value]) (let [evaluation-result (interpret value environment)]
-                                                           (swap! environment assoc name' evaluation-result)
-                                                           evaluation-result)
-         :_                                              (lu/fail-with "Malformed definition!")))
+(defn lox-define [name expression environment]
+  (let [evaluation-result (interpret expression environment)]
+    (swap! environment assoc name evaluation-result)
+    evaluation-result))
 
-(defn lox-assign [operands environment]
-  (match operands
-         (:seq [{:node :lox-symbol :value name'} value]) (let [_ (resolve-symbol name' environment)
-                                                               evaluation-result (interpret value environment)]
-                                                           (swap! environment assoc name' evaluation-result)
-                                                           evaluation-result)
-         :_                                              (lu/fail-with "Malformed assignment expression!")))
+(defn lox-assign [name expression environment]
+  (let [_                 (resolve-symbol name environment)
+        evaluation-result (interpret expression environment)]
+    (swap! environment assoc name evaluation-result)
+    evaluation-result))
 
 (defn ensuring-boolean [value]
   (if (instance? Boolean value)
     value
     (lu/fail-with "The expression does not evaluate to a boolean!")))
 
-(defn lox-if [operands environment]
-  (match operands
-         (:seq [condition then else]) (if (ensuring-boolean (interpret condition environment))
-                                        (interpret then environment)
-                                        (interpret else environment))
-         (:seq [condition then])      (if (ensuring-boolean (interpret condition environment))
-                                        (interpret then environment))
-         :_                           (lu/fail-with "Malformed if-expression!")))
+(defn lox-if [cond then else environment]
+  (if (ensuring-boolean (interpret cond environment))
+    (interpret then environment)
+    (if else
+      (interpret else environment))))
 
 (defn lox-let [bindings body environment]
-  (let [parse-binding (clauses {:node     :lox-list
-                                :elements (:seq [{:node  :lox-symbol
-                                                  :value name}
-                                                 expression])} [name expression]
-                                          :_                   (lu/fail-with "Malformed let-expression!"))]
+  (let [parse-binding
+        (clauses (:seq [(:seq [:lox-symbol name]) expression]) [name expression]
+                 :_                                            (lu/fail-with "Malformed let-expression!"))]
 
     (let [parsed-bindings (map parse-binding bindings)]
       (doseq [[name expression] parsed-bindings]
@@ -70,46 +61,35 @@
 (defn interpret [lox-syntax-tree environment]
   (match lox-syntax-tree
 
-         {:node  (:or :lox-number
-                      :lox-string
-                      :lox-boolean)
-          :value value}                           value
+         (:seq [:lox-number value])                       value
 
-         {:node :lox-nil}                         nil
+         (:seq [:lox-string value])                       value
 
-         {:node :lox-symbol
-          :value symbol}                          (resolve-symbol symbol environment)
+         (:seq [:lox-boolean value])                      value
 
-         {:node     :lox-list
-          :elements (:seq [{:node  :lox-symbol
-                            :value :define}
-                           & operands])}          (lox-define operands environment)
+         (:seq [:lox-nil])                                nil
 
-         {:node     :lox-list
-          :elements (:seq [{:node  :lox-symbol
-                            :value :set}
-                           & operands])}          (lox-assign operands environment)
+         (:seq [:lox-symbol symbol])                      (resolve-symbol symbol environment)
 
-         {:node     :lox-list
-          :elements (:seq [{:node  :lox-symbol
-                            :value :if}
-                           & operands])}          (lox-if operands environment)
+         (:seq [:lox-define
+                (:seq [:lox-symbol name])
+                expression])                              (lox-define name expression environment)
 
-         {:node     :lox-list
-          :elements (:seq [{:node  :lox-symbol
-                            :value :let}
-                           {:node :lox-list
-                            :elements bindings}
-                           body])}                (lox-let bindings body environment)
+         (:seq [:lox-assign
+                (:seq [:lox-symbol name])
+                expression])                              (lox-assign name expression environment)
 
-         {:node     :lox-list
-          :elements (:seq [operator & operands])} (apply (interpret operator environment)
-                                                         (map #(interpret % environment) operands))
+         (:seq [:lox-if cond then else])                  (lox-if cond then else environment)
 
-         {:node        :lox-program
-          :expressions expressions}               (reduce (fn [_ expression] (interpret expression environment))
-                                                          nil
-                                                          expressions)
 
-         expression                               (lu/fail-with
-                                                    (str "Could not interpret expression! " expression))))
+         (:seq [:lox-let bindings body])                  (lox-let bindings body environment)
+
+         (:seq [:lox-list (:seq [operator & operands])])  (apply (interpret operator environment)
+                                                                 (map #(interpret % environment) operands))
+
+         (:seq [:lox-program expressions])                (reduce (fn [_ expression] (interpret expression environment))
+                                                                       nil
+                                                                       expressions)
+
+         expression                                       (lu/fail-with
+                                                            (str "Could not interpret expression! " expression))))

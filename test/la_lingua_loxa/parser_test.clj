@@ -12,68 +12,38 @@
 
 (deftest parser-test
   (testing "Parsing integers"
-    (should-parse-to "1" {:node  :lox-number
-                          :value 1}))
+    (should-parse-to "1" [:lox-number 1]))
 
   (testing "Parsing real numbers"
-    (should-parse-to "1.2" {:node  :lox-number
-                            :value 1.2}))
+    (should-parse-to "1.2" [:lox-number 1.2]))
 
   (testing "Parsing nil"
-    (should-parse-to "nil" {:node :lox-nil}))
+    (should-parse-to "nil" [:lox-nil]))
 
   (testing "Parsing booleans"
-    (should-parse-to "true" {:node  :lox-boolean
-                             :value true})
-    (should-parse-to "false" {:node  :lox-boolean
-                              :value false}))
+    (should-parse-to "true" [:lox-boolean true])
+    (should-parse-to "false" [:lox-boolean false]))
 
   (testing "Parsing strings"
-    (should-parse-to "\"Hello\"" {:node  :lox-string
-                                  :value "Hello"}))
+    (should-parse-to "\"Hello\"" [:lox-string "Hello"]))
 
   (testing "Parsing symbols"
-    (should-parse-to "+" {:node  :lox-symbol
-                          :value :+})
-    (should-parse-to "+1" {:node  :lox-symbol
-                           :value :+1})
-    (should-parse-to "concat" {:node  :lox-symbol
-                               :value :concat})
-    (should-parse-to "," {:node  :lox-symbol
-                          :value (keyword ",")})
-    (should-parse-to "++11++" {:node  :lox-symbol
-                               :value :++11++}))
+    (should-parse-to "+" [:lox-symbol :+])
+    (should-parse-to "concat" [:lox-symbol :concat])
+    (should-parse-to "," [:lox-symbol (keyword ",")])
+    (should-parse-to "++11++" [:lox-symbol :++11++]))
 
   (testing "Parsing lists"
-    (should-parse-to "()" {:node     :lox-list
-                           :elements '()})
-    (should-parse-to "(x)" {:node     :lox-list
-                            :elements '({:node  :lox-symbol
-                                         :value :x})})
-    (should-parse-to "(x y)" {:node     :lox-list
-                              :elements '({:node  :lox-symbol
-                                           :value :x}
-                                           {:node  :lox-symbol
-                                            :value :y})})
-    (should-parse-to "( x y)" {:node     :lox-list
-                               :elements '({:node  :lox-symbol
-                                            :value :x}
-                                            {:node  :lox-symbol
-                                             :value :y})})
-    (should-parse-to "(x y  )" {:node     :lox-list
-                                :elements '({:node  :lox-symbol
-                                             :value :x}
-                                             {:node  :lox-symbol
-                                              :value :y})})
-    (should-parse-to "( x y  )" {:node     :lox-list
-                                 :elements '({:node  :lox-symbol
-                                              :value :x}
-                                              {:node  :lox-symbol
-                                               :value :y})})
-    (should-parse-to "(+ 1 2)" {:node     :lox-list
-                                :elements '({:node  :lox-symbol
-                                             :value :+}
-                                             {:node  :lox-number
-                                              :value 1}
-                                             {:node  :lox-number
-                                              :value 2})})))
+    (should-parse-to "()" [:lox-list []])
+    (should-parse-to "(x)" [:lox-list [[:lox-symbol :x]]])
+    (should-parse-to "(x y)" [:lox-list [[:lox-symbol :x]
+                                         [:lox-symbol :y]]])
+    (should-parse-to "( x y)" [:lox-list [[:lox-symbol :x]
+                                          [:lox-symbol :y]]])
+    (should-parse-to "(x y  )" [:lox-list [[:lox-symbol :x]
+                                           [:lox-symbol :y]]])
+    (should-parse-to "( x y  )" [:lox-list [[:lox-symbol :x]
+                                            [:lox-symbol :y]]])
+    (should-parse-to "(+ 1 2)" [:lox-list [[:lox-symbol :+]
+                                           [:lox-number 1]
+                                           [:lox-number 2]]])))

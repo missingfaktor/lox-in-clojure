@@ -25,7 +25,7 @@
                        y")
            12))
     (is (= (interpret "(define y 12)
-                       (set y 21)
+                       (assign y 21)
                        y")
            21)))
 
@@ -33,7 +33,7 @@
     (is (thrown? RuntimeException (interpret "y"))))
 
   (testing "Reassignment to undeclared variable failure"
-    (is (thrown? RuntimeException (interpret "(set y 11)"))))
+    (is (thrown? RuntimeException (interpret "(assign y 11)"))))
 
   (testing "Numeric operations"
     (= (interpret "(define y 12)
