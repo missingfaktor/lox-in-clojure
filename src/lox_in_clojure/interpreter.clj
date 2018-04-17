@@ -52,7 +52,7 @@
         (interpret body scope)
         (recur)))))
 
-(defn interpret [lox-syntax-tree environment]
+(defn interpret [lox-syntax-tree scope]
   (match lox-syntax-tree
 
          (:seq [:lox-number value])                       value
@@ -63,27 +63,27 @@
 
          (:seq [:lox-nil])                                nil
 
-         (:seq [:lox-symbol name])                        (lox-resolve name environment)
+         (:seq [:lox-symbol name])                        (lox-resolve name scope)
 
          (:seq [:lox-define
                 (:seq [:lox-symbol name])
-                expression])                              (lox-define name expression environment)
+                expression])                              (lox-define name expression scope)
 
          (:seq [:lox-assign
                 (:seq [:lox-symbol name])
-                expression])                              (lox-assign name expression environment)
+                expression])                              (lox-assign name expression scope)
 
-         (:seq [:lox-if cond then else])                  (lox-if cond then else environment)
+         (:seq [:lox-if cond then else])                  (lox-if cond then else scope)
 
 
-         (:seq [:lox-let bindings body])                  (lox-let bindings body environment)
+         (:seq [:lox-let bindings body])                  (lox-let bindings body scope)
 
-         (:seq [:lox-while cond body])                    (lox-while cond body environment)
+         (:seq [:lox-while cond body])                    (lox-while cond body scope)
 
-         (:seq [:lox-list (:seq [operator & operands])])  (apply (interpret operator environment)
-                                                                 (map #(interpret % environment) operands))
+         (:seq [:lox-list (:seq [operator & operands])])  (apply (interpret operator scope)
+                                                                 (map #(interpret % scope) operands))
 
-         (:seq [:lox-program expressions])                (reduce (fn [_ expression] (interpret expression environment))
+         (:seq [:lox-program expressions])                (reduce (fn [_ expression] (interpret expression scope))
                                                                        nil
                                                                        expressions)
 
