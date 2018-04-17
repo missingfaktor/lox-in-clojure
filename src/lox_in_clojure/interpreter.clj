@@ -1,42 +1,25 @@
 (ns lox-in-clojure.interpreter
   (:require [akar.syntax :refer [match clauses]]
             [akar.patterns :refer [!constant]]
-            [lox-in-clojure.internal.utilities :as lu])
+            [lox-in-clojure.internal.utilities :as lu]
+            [lox-in-clojure.scope :as sc])
   (:gen-class))
-
-(def +global-environment+
-  {:+            +
-   :-            -
-   :*            *
-   :/            /
-   (keyword ",") str
-   :<            <
-   :<=           <=
-   :>            >
-   :>=           >=
-   :=            =
-   :not=         not=
-   :print        println})
-
-(defn clone-global-environment []
-  (atom +global-environment+))
-
-(defn resolve-symbol [symbol' environment]
-  (match symbol'
-         (:look-in @environment fun) fun
-         :_                          (lu/fail-with (str "Could not resolve symbol! " symbol'))))
 
 (declare interpret)
 
-(defn lox-define [name expression environment]
-  (let [evaluation-result (interpret expression environment)]
-    (swap! environment assoc name evaluation-result)
+(defn lox-resolve [name scope]
+  (let [[value _] (sc/resolve-symbol name scope)]
+    value))
+
+(defn lox-define [name expression scope]
+  (let [evaluation-result (interpret expression scope)]
+    (sc/set-in-global-scope name evaluation-result scope)
     evaluation-result))
 
-(defn lox-assign [name expression environment]
-  (let [_                 (resolve-symbol name environment)
-        evaluation-result (interpret expression environment)]
-    (swap! environment assoc name evaluation-result)
+(defn lox-assign [name expression scope]
+  (let [[_ scope-resolved-in] (sc/resolve-symbol name scope)
+        evaluation-result     (interpret expression scope)]
+    (sc/set-in-scope name evaluation-result scope-resolved-in)
     evaluation-result))
 
 (defn ensuring-boolean [value]
@@ -44,22 +27,23 @@
     value
     (lu/fail-with "The expression does not evaluate to a boolean!")))
 
-(defn lox-if [cond then else environment]
-  (if (ensuring-boolean (interpret cond environment))
-    (interpret then environment)
+(defn lox-if [cond then else scope]
+  (if (ensuring-boolean (interpret cond scope))
+    (interpret then scope)
     (if else
-      (interpret else environment))))
+      (interpret else scope))))
 
-(defn lox-let [bindings body environment]
+(defn lox-let [bindings body scope]
   (let [parse-binding
         (clauses (:seq [(:seq [:lox-symbol name]) expression]) [name expression]
                  :_                                            (lu/fail-with "Malformed let-expression!"))]
-
-    (let [parsed-bindings (map parse-binding bindings)]
-      (doseq [[name expression] parsed-bindings]
-        (let [evaluation-result (interpret expression environment)]
-          (swap! environment assoc name evaluation-result)))
-      (interpret body environment))))
+    (sc/with-new-scope scope
+                       (fn [new-scope]
+                         (let [parsed-bindings (map parse-binding bindings)]
+                           (doseq [[name expression] parsed-bindings]
+                             (let [evaluation-result (interpret expression new-scope)]
+                               (sc/set-in-scope name evaluation-result new-scope)))
+                           (interpret body new-scope))))))
 
 (defn interpret [lox-syntax-tree environment]
   (match lox-syntax-tree
@@ -72,7 +56,7 @@
 
          (:seq [:lox-nil])                                nil
 
-         (:seq [:lox-symbol symbol])                      (resolve-symbol symbol environment)
+         (:seq [:lox-symbol name])                        (lox-resolve name environment)
 
          (:seq [:lox-define
                 (:seq [:lox-symbol name])

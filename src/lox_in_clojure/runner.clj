@@ -4,31 +4,32 @@
             [lox-in-clojure.parser :as lp]
             [lox-in-clojure.interpreter :as li]
             [lox-in-clojure.internal.utilities :as lu]
+            [lox-in-clojure.scope :as sc]
             [clojure.pprint :refer [pprint]]
             [akar-exceptions.core :refer [attempt !ex]])
   (:gen-class))
 
-(defn run [lox-source environment]
+(defn run [lox-source scope]
   (let [parse-result (lp/parse lox-source)
         _            (if (:error parse-result)
                        (lu/fail-with (str "Parsing failure! " (:error parse-result))))
         syntax-tree  (:value parse-result)
         _            (lu/report syntax-tree :header "# Syntax tree:" :color :yellow)
-        _            (lu/report (keys @environment) :header "# Environment:" :color :blue)
-        value        (li/interpret syntax-tree environment)]
+        _            (lu/report scope :header "# Scope:" :color :blue)
+        value        (li/interpret syntax-tree scope)]
     (lu/report value :header "# Value:" :color :green)))
 
 (defn run-prompt []
-  (let [environment (li/clone-global-environment)]
+  (let [scope (sc/fresh-global-scope)]
     (loop []
       (print "lox> ")
       (flush)
-      (attempt (run (read-line) environment)
+      (attempt (run (read-line) scope)
                :on-error ([(!ex Exception) ex] (lu/report (.getMessage ex) :color :red)))
       (recur))))
 
 (defn run-file [file]
-  (run (slurp file) (li/clone-global-environment)))
+  (run (slurp file) (sc/fresh-global-scope)))
 
 (defn -main [& args]
   (match (seq args)

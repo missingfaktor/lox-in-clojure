@@ -1,6 +1,7 @@
 (ns lox-in-clojure.internal.utilities
   (:require [akar.syntax :refer [match]]
             [clojure.pprint :refer [pprint]])
+  (:import [java.util HashMap])
   (:gen-class))
 
 (defn report [value & {:keys [color header]}]
@@ -22,3 +23,9 @@
 
 (defn string-within-range [start end]
   (apply str (map char (range (int start) (inc (int end))))))
+
+(defn mutable-map [map']
+  (let [new-map (HashMap.)]
+    (doseq [[k v] map']
+      (.put new-map k v))
+    new-map))

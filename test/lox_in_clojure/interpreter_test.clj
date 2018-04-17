@@ -1,10 +1,11 @@
 (ns lox-in-clojure.interpreter-test
   (:require [clojure.test :refer :all]
             [lox-in-clojure.interpreter :as li]
+            [lox-in-clojure.scope :as sc]
             [lox-in-clojure.parser :as lp]))
 
 (defn interpret [source-line]
-  (li/interpret (:value (lp/parse source-line)) (li/clone-global-environment)))
+  (li/interpret (:value (lp/parse source-line)) (sc/fresh-global-scope)))
 
 (deftest interpreter-test
   (testing "Atomic values"
@@ -50,7 +51,14 @@
     (is (= (interpret "(let ((x 11)) x)")
            11))
     (is (= (interpret "(let ((b 9) (c b)) (+ b c))")
-           18)))
+           18))
+    (is (= (interpret "(define x 9)
+                       (let ((x 1)) x)")
+           1))
+    (is (= (interpret "(define x 9)
+                       (let ((x 1)) x)
+                       x")
+           9)))
 
   (testing "if"
     (is (= (interpret "(if (= 1 1) 5)")
