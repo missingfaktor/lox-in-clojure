@@ -45,6 +45,13 @@
                                (sc/set-in-scope name evaluation-result new-scope)))
                            (interpret body new-scope))))))
 
+(defn lox-while [cond body scope]
+  (loop []
+    (if (ensuring-boolean (interpret cond scope))
+      (do
+        (interpret body scope)
+        (recur)))))
+
 (defn interpret [lox-syntax-tree environment]
   (match lox-syntax-tree
 
@@ -70,6 +77,8 @@
 
 
          (:seq [:lox-let bindings body])                  (lox-let bindings body environment)
+
+         (:seq [:lox-while cond body])                    (lox-while cond body environment)
 
          (:seq [:lox-list (:seq [operator & operands])])  (apply (interpret operator environment)
                                                                  (map #(interpret % environment) operands))

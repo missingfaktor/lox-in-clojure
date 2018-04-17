@@ -68,4 +68,8 @@
     (is (= (interpret "(if (not= 1 1) 5)")
            nil))
     (is (= (interpret "(if (not= 1 1) 5 6)")
-           6))))
+           6)))
+
+  (testing "while"
+    (is (= (interpret "(let ((i 5) (dummy (while (> i 2) (assign i (- i 1))))) i)"))
+        2)))
