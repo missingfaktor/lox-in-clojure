@@ -1,6 +1,6 @@
-# la-lingua-loxa
+# lox-in-clojure
 
-[![Build Status](https://travis-ci.org/missingfaktor/la-lingua-loxa.svg?branch=master)](https://travis-ci.org/missingfaktor/la-lingua-loxa)
+[![Build Status](https://travis-ci.org/missingfaktor/lox-in-clojure.svg?branch=master)](https://travis-ci.org/missingfaktor/lox-in-clojure)
 
 This is a Clojure implementation of a tree-walking interpreter for Lox language from [Bob Nystorm](https://twitter.com/munificentbob)'s excellent book ["Crafting Interpreters"](http://craftinginterpreters.com/).
 
@@ -14,7 +14,3 @@ Since the only aim of this project is learning, I am deviating from the book in 
 
 - I didn't hand-roll a scanner and a parser. I used a parser combinator library instead.
 - I picked Lisp syntax for my version of Lox.
-
-# Why is this project named in Italian?
-
-When I created this repository, I had just finished binging on [Lemony Snicket's A Series of Unfortunate Events](https://en.wikipedia.org/wiki/A_Series_of_Unfortunate_Events_(TV_series)), and it left me thinking about Italian food. That's all. :spaghetti:

@@ -1,7 +1,7 @@
-(ns la-lingua-loxa.parser
+(ns lox-in-clojure.parser
   (:require [blancas.kern.core :as k]
             [blancas.kern.lexer.basic :as kl]
-            [la-lingua-loxa.internal.utilities :as lu])
+            [lox-in-clojure.internal.utilities :as lu])
   (:gen-class))
 
 (def whitespace?

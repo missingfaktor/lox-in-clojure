@@ -1,7 +1,7 @@
-(ns la-lingua-loxa.interpreter
+(ns lox-in-clojure.interpreter
   (:require [akar.syntax :refer [match clauses]]
             [akar.patterns :refer [!constant]]
-            [la-lingua-loxa.internal.utilities :as lu])
+            [lox-in-clojure.internal.utilities :as lu])
   (:gen-class))
 
 (def +global-environment+

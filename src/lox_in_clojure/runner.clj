@@ -1,9 +1,9 @@
-(ns la-lingua-loxa.runner
+(ns lox-in-clojure.runner
   (:require [akar.syntax :refer [match]]
             [clojure.string :refer [lower-case]]
-            [la-lingua-loxa.parser :as lp]
-            [la-lingua-loxa.interpreter :as li]
-            [la-lingua-loxa.internal.utilities :as lu]
+            [lox-in-clojure.parser :as lp]
+            [lox-in-clojure.interpreter :as li]
+            [lox-in-clojure.internal.utilities :as lu]
             [clojure.pprint :refer [pprint]]
             [akar-exceptions.core :refer [attempt !ex]])
   (:gen-class))
@@ -33,6 +33,6 @@
 (defn -main [& args]
   (match (seq args)
          (:or nil (:seq []))                (run-prompt)
-         (:seq [(:view lower-case "help")]) (lu/report "Usage la-lingua-loxa [file]" :color :green)
+         (:seq [(:view lower-case "help")]) (lu/report "Usage: lox [file]" :color :green)
          (:seq [file])                      (run-file file)
-         :_                                 (lu/report "Usage la-lingua-loxa [file]" :color :red)))
+         :_                                 (lu/report "Usage: lox [file]" :color :red)))

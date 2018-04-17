@@ -1,7 +1,7 @@
-(ns la-lingua-loxa.interpreter-test
+(ns lox-in-clojure.interpreter-test
   (:require [clojure.test :refer :all]
-            [la-lingua-loxa.interpreter :as li]
-            [la-lingua-loxa.parser :as lp]))
+            [lox-in-clojure.interpreter :as li]
+            [lox-in-clojure.parser :as lp]))
 
 (defn interpret [source-line]
   (li/interpret (:value (lp/parse source-line)) (li/clone-global-environment)))

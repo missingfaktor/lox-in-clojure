@@ -1,4 +1,4 @@
-(ns la-lingua-loxa.internal.utilities
+(ns lox-in-clojure.internal.utilities
   (:require [akar.syntax :refer [match]]
             [clojure.pprint :refer [pprint]])
   (:gen-class))

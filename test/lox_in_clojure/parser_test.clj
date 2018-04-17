@@ -1,8 +1,8 @@
-(ns la-lingua-loxa.parser-test
+(ns lox-in-clojure.parser-test
   (:require [clojure.test :refer :all]
-            [la-lingua-loxa.parser :as lp]
+            [lox-in-clojure.parser :as lp]
             [blancas.kern.core :as k]
-            [la-lingua-loxa.internal.utilities :as lu]))
+            [lox-in-clojure.internal.utilities :as lu]))
 
 (defn should-parse-to [text expected]
   (let [parse-result (k/parse lp/lox-expression text)]
