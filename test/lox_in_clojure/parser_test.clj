@@ -46,4 +46,9 @@
                                             [:lox-symbol :y]]])
     (should-parse-to "(+ 1 2)" [:lox-list [[:lox-symbol :+]
                                            [:lox-number 1]
-                                           [:lox-number 2]]])))
+                                           [:lox-number 2]]]))
+
+  (testing "Parsing while loop"
+    (should-parse-to "(while (= 1 2) (println 1))" [:lox-while
+                                                    [:lox-list [[:lox-symbol :=] [:lox-number 1] [:lox-number 2]]]
+                                                    [:lox-list [[:lox-symbol :println] [:lox-number 1]]]])))

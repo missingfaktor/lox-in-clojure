@@ -28,7 +28,7 @@
   (k/bind [[head tail] (k/<*> lox-symbol-start
                               (k/many (k/<|> lox-symbol-start k/digit)))]
     (let [symbol (keyword (apply str head tail))]
-      (if (#{:define :assign :if :let} symbol)
+      (if (#{:define :assign :if :let :while} symbol)
         (k/fail (str symbol " is a reserved word! It cannot be used as a symbol."))
         (k/return [:lox-symbol (keyword (apply str head tail))])))))
 
@@ -101,12 +101,20 @@
                       body     (k/fwd lox-expression)]
                (k/return [:lox-let bindings body]))))
 
+(def lox-while
+  (bracketed (k/bind [_    (k/token* "while")
+                      _    whitespace?
+                      cond (k/fwd lox-expression)
+                      _    (k/optional whitespace)
+                      body (k/fwd lox-expression)]
+               (k/return [:lox-while cond body]))))
+
 (def lox-list
   (k/bind [elements (bracketed (k/sep-end-by whitespace? (k/fwd lox-expression)))]
     (k/return [:lox-list elements])))
 
 (def lox-expression
-  (k/<|> lox-atom lox-define lox-assign lox-if lox-let lox-list))
+  (k/<|> lox-atom lox-define lox-assign lox-if lox-let lox-while lox-list))
 
 (def lox-program
   (k/bind [expressions (k/<*> (k/sep-end-by whitespace? lox-expression) (k/skip k/eof))]
