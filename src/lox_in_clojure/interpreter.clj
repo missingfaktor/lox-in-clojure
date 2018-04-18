@@ -52,6 +52,10 @@
         (interpret body scope)
         (recur)))))
 
+(defn lox-do [expressions scope]
+  (doseq [expression expressions]
+    (interpret expression scope)))
+
 (defn interpret [lox-syntax-tree scope]
   (match lox-syntax-tree
 
@@ -79,6 +83,8 @@
          (:seq [:lox-let bindings body])                  (lox-let bindings body scope)
 
          (:seq [:lox-while cond body])                    (lox-while cond body scope)
+
+         (:seq [:lox-do expressions])                     (lox-do expressions scope)
 
          (:seq [:lox-list (:seq [operator & operands])])  (apply (interpret operator scope)
                                                                  (map #(interpret % scope) operands))
