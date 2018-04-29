@@ -63,7 +63,10 @@
            {:type    :lox-callable
             :subtype :native-function
             :clojure function}        (apply function operands')
-           :_                         (lu/fail-with (str "Not a callable!" operator')))))
+           :_                         (lu/fail-with (str "The value '" operator' "' is not a callable and therefore "
+                                                         "cannot appear in this position. "
+                                                         "Examples of callable things are special forms, "
+                                                         "native functions, Lox functions, and Lox methods.")))))
 
 (defn interpret [lox-syntax-tree scope]
   (match lox-syntax-tree

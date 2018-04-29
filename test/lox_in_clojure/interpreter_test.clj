@@ -76,4 +76,5 @@
 
   (testing "native function invocations"
     (is (= (interpret "(+ 1 2)")
-           3))))
+           3))
+    (is (thrown? RuntimeException (interpret "(1 2)")))))
