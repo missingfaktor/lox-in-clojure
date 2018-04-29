@@ -72,4 +72,8 @@
 
   (testing "while"
     (is (= (interpret "(let ((i 5) (dummy (while (> i 2) (assign i (- i 1))))) i)"))
-        2)))
+        2))
+
+  (testing "native function invocations"
+    (is (= (interpret "(+ 1 2)")
+           3))))

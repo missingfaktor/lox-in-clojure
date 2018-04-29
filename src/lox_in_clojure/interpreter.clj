@@ -56,6 +56,15 @@
   (doseq [expression expressions]
     (interpret expression scope)))
 
+(defn lox-invoke [operator operands scope]
+  (let [operator' (interpret operator scope)
+        operands' (map #(interpret % scope) operands)]
+    (match operator'
+           {:type    :lox-callable
+            :subtype :native-function
+            :clojure function}        (apply function operands')
+           :_                         (lu/fail-with (str "Not a callable!" operator')))))
+
 (defn interpret [lox-syntax-tree scope]
   (match lox-syntax-tree
 
@@ -86,8 +95,7 @@
 
          (:seq [:lox-do expressions])                     (lox-do expressions scope)
 
-         (:seq [:lox-list (:seq [operator & operands])])  (apply (interpret operator scope)
-                                                                 (map #(interpret % scope) operands))
+         (:seq [:lox-list (:seq [operator & operands])])  (lox-invoke operator operands scope)
 
          (:seq [:lox-program expressions])                (reduce (fn [_ expression] (interpret expression scope))
                                                                        nil

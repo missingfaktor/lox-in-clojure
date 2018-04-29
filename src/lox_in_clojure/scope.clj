@@ -1,22 +1,12 @@
 (ns lox-in-clojure.scope
   (:require [akar.syntax :refer [match clauses]]
             [akar.patterns :refer [!constant]]
-            [lox-in-clojure.internal.utilities :as lu])
+            [lox-in-clojure.internal.utilities :as lu]
+            [lox-in-clojure.native-functions :as ln])
   (:gen-class))
 
 (defn fresh-global-scope []
-  {:values    (lu/mutable-map {:+            +
-                               :-            -
-                               :*            *
-                               :/            /
-                               (keyword ",") str
-                               :<            <
-                               :<=           <=
-                               :>            >
-                               :>=           >=
-                               :=            =
-                               :not=         not=
-                               :print        println})
+  {:values    (lu/mutable-map {})
    :enclosing nil})
 
 (defn enclosing-global-scope [scope]
@@ -30,12 +20,26 @@
 (defn set-in-scope [symbol value scope]
   (.put (:values scope) symbol value))
 
-(defn resolve-symbol [symbol scope]
+(defn resolve-var-or-local [symbol scope]
   (if-let [resolved (.get (:values scope) symbol)]
     [resolved scope]
     (if-let [parent (:enclosing scope)]
-      (resolve-symbol symbol parent)
-      (lu/fail-with (str "Could not resolve symbol! " symbol)))))
+      (resolve-var-or-local symbol parent)
+      ::failed-to-resolve)))
+
+(defn resolve-native-function [symbol]
+  (if-let [fun (symbol ln/+native-functions+)]
+    [fun nil]
+    ::failed-to-resolve))
+
+(defn resolve-symbol [symbol scope]
+  (let [variable (resolve-var-or-local symbol scope)]
+    (if (not= variable ::failed-to-resolve)
+      variable
+      (let [native-function (resolve-native-function symbol)]
+        (if (not= native-function ::failed-to-resolve)
+          native-function
+          (lu/fail-with (str "Could not resolve symbol! " symbol)))))))
 
 (defn with-new-scope [enclosing block]
   (block {:values (lu/mutable-map {})
