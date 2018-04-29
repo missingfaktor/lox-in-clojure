@@ -1,4 +1,4 @@
-(ns lox-in-clojure.native-functions)
+(ns lox-in-clojure.functions)
 
 (defn create-lox-native-function [name clojure-function]
   {:type    :lox-callable

@@ -2,7 +2,7 @@
   (:require [akar.syntax :refer [match clauses]]
             [akar.patterns :refer [!constant]]
             [lox-in-clojure.internal.utilities :as lu]
-            [lox-in-clojure.native-functions :as ln])
+            [lox-in-clojure.functions :as lf])
   (:gen-class))
 
 (defn fresh-global-scope []
@@ -28,7 +28,7 @@
       ::failed-to-resolve)))
 
 (defn resolve-native-function [symbol]
-  (if-let [fun (symbol ln/+native-functions+)]
+  (if-let [fun (symbol lf/+native-functions+)]
     [fun nil]
     ::failed-to-resolve))
 
